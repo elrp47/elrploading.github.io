@@ -51,7 +51,20 @@ body {
 /* Слайдшоу из fones/. Кадры лежат друг на друге и переключаются прозрачностью:
    так между снимками нет ни чёрного мига, ни рывка. */
 
-.bg-shots { position: absolute; inset: 0; overflow: hidden; }
+/* Первый кадр прописан прямо здесь, а не только в скрипте: в окне загрузки
+   Garry's Mod страница живёт считанные секунды, и если перебор имён через
+   new Image() почему-то не отработал (кэш, медленный канал, оборванный
+   запрос), фон обязан появиться хотя бы из CSS. Путь — от файла стилей,
+   поэтому ../fones/. Найденные скриптом кадры лягут поверх непрозрачно. */
+.bg-shots {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background-image: url("../fones/1.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
 
 .shot {
     position: absolute;
