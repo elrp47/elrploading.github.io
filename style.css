@@ -1,0 +1,502 @@
+/* EliteRP · экран загрузки
+   ---------------------------------------------------------------------------
+   Палитра и формы повторяют внутриигровой интерфейс (EliteRP_UI): тёмный фон,
+   скруглённые карточки, волосяная линия сверху вместо рамки, один акцентный
+   цвет. Шрифт — Bahnschrift, как в игре; на не-Windows подхватится следующий
+   гротеск из стека. Из внешних файлов страница тянет только знак сервера и
+   снимки из fones/ — оба слоя необязательные: пока они не пришли, экран
+   выглядит ровно так же, только без картинок. */
+
+:root {
+    --bg:        #090b10;
+    --bg-head:   #0e1118;
+    --card:      rgba(15, 18, 25, 0.86);
+    --card-soft: rgba(21, 25, 34, 0.90);
+    --sunken:    rgba(8, 10, 15, 0.85);
+    --hairline:  rgba(130, 155, 185, 0.12);
+
+    --white: #e8f0fa;
+    --dim:   #8e9eb4;
+    --faint: #66748a;
+
+    --accent: #21c8ff;
+    --green:  #60d69a;
+    --amber:  #eca83e;
+    --red:    #e23e34;
+
+    --r: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: "Bahnschrift SemiBold", "Bahnschrift", "Segoe UI Semibold",
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Фон ─────────────────────────────────────────────────────────────────── */
+
+.bg { position: fixed; inset: 0; z-index: 0; }
+
+/* Слайдшоу из fones/. Кадры лежат друг на друге и переключаются прозрачностью:
+   так между снимками нет ни чёрного мига, ни рывка. */
+
+.bg-shots { position: absolute; inset: 0; overflow: hidden; }
+
+.shot {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    /* Медленный наезд: кадр не стоит мёртво все двенадцать секунд. */
+    animation: drift 26s ease-in-out infinite alternate;
+}
+
+.shot.on { opacity: 1; }
+
+@keyframes drift {
+    from { transform: scale(1.06); }
+    to   { transform: scale(1.14); }
+}
+
+/* Затемнение поверх снимка — иначе светлый бетон Сити-17 съедает текст. */
+.bg-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right,
+        rgba(9, 11, 16, 0.93) 0%,
+        rgba(9, 11, 16, 0.74) 55%,
+        rgba(9, 11, 16, 0.86) 100%);
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(130, 155, 185, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130, 155, 185, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    /* Целые пиксели: дробный шаг сетки на части драйверов идёт полосами. */
+}
+
+.bg-glow {
+    position: absolute;
+    left: 50%;
+    top: -30vh;
+    width: 120vw;
+    height: 120vh;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side,
+        rgba(33, 200, 255, 0.10), rgba(33, 200, 255, 0) 70%);
+}
+
+/* Развёртка: одна медленная полоса сверху вниз. */
+.bg-scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 45vh;
+    background: linear-gradient(to bottom,
+        rgba(33, 200, 255, 0) 0%,
+        rgba(33, 200, 255, 0.05) 60%,
+        rgba(33, 200, 255, 0) 100%);
+    animation: scan 9s linear infinite;
+}
+
+@keyframes scan {
+    from { transform: translateY(-45vh); }
+    to   { transform: translateY(100vh); }
+}
+
+.bg-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center,
+        rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+/* ── Каркас ──────────────────────────────────────────────────────────────── */
+
+.shell {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 4vh 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* ── Шапка ───────────────────────────────────────────────────────────────── */
+
+.head {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.mark {
+    flex: 0 0 auto;
+    width: 62px;
+    height: 62px;
+    display: grid;
+    place-items: center;
+    background: var(--card);
+    border-radius: var(--r);
+    box-shadow: inset 0 1px 0 var(--hairline);
+}
+
+.claw {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    animation: pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50%      { opacity: 1; }
+}
+
+.head-text { flex: 1 1 auto; min-width: 0; }
+
+.head-text h1 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.head-text p {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--faint);
+}
+
+.head-state {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1.6s ease-in-out infinite;
+}
+
+.dot.ready { background: var(--green); animation: none; }
+
+@keyframes blink {
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 1; }
+}
+
+/* ── Тело ────────────────────────────────────────────────────────────────── */
+
+.body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 18px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: var(--r);
+    box-shadow: inset 0 1px 0 var(--hairline);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--faint);
+    margin-bottom: 16px;
+}
+
+/* Сводка */
+
+.rows { display: flex; flex-direction: column; gap: 2px; }
+
+.row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.row:last-child { border-bottom: 0; }
+
+.row dt {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--faint);
+    white-space: nowrap;
+}
+
+.row dd {
+    font-size: 15px;
+    color: var(--white);
+    text-align: right;
+    word-break: break-all;
+}
+
+.links {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.links a {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 7px;
+    background: var(--card-soft);
+    color: var(--dim);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(33, 200, 255, 0.35);
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.links a:hover {
+    color: var(--white);
+    background: #1a1f2a;
+    border-bottom-color: var(--accent);
+}
+
+/* Советы: по три штуки на странице, страница сменяется целиком */
+
+.tips { justify-content: space-between; }
+
+.tip-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 14px;
+    animation: fade 0.45s ease;
+}
+
+@keyframes fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.tip-key {
+    flex: 0 0 auto;
+    min-width: 72px;
+    padding: 9px 10px;
+    text-align: center;
+    background: var(--sunken);
+    border-radius: 8px;
+    border-bottom: 2px solid var(--accent);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+}
+
+.tip-body { min-width: 0; }
+
+.tip-body h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.tip-body p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--dim);
+}
+
+.tip-dots {
+    display: flex;
+    gap: 6px;
+    padding-top: 16px;
+}
+
+.tip-dots i {
+    width: 22px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--card-soft);
+    transition: background 0.25s;
+}
+
+.tip-dots i.on { background: var(--accent); }
+
+/* ── Прогресс ────────────────────────────────────────────────────────────── */
+
+.progress-block {
+    background: var(--card);
+    border-radius: var(--r);
+    box-shadow: inset 0 1px 0 var(--hairline);
+    padding: 18px 22px 20px;
+}
+
+.progress-head,
+.progress-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.progress-head {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+}
+
+.muted { color: var(--faint); font-weight: 600; letter-spacing: 0.08em; }
+
+.bar {
+    position: relative;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--sunken);
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+    background: var(--accent);
+    transition: width 0.35s ease;
+}
+
+/* Ожидание: движок ещё не сказал, сколько файлов предстоит скачать, поэтому
+   процента не существует. Вместо мёртвой пустой полосы — бегунок: видно, что
+   связь идёт, и при этом ничего не выдумано. */
+.bar.wait::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34%;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+        rgba(33, 200, 255, 0), rgba(33, 200, 255, 0.55), rgba(33, 200, 255, 0));
+    animation: crawl 1.9s ease-in-out infinite;
+}
+
+@keyframes crawl {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(300%); }
+}
+
+/* Блик по заполненной части: видно, что процесс идёт, даже когда процент
+   надолго замирает на большом файле. */
+.bar-sweep {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bar-sweep::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 120px;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+    animation: sweep 1.6s linear infinite;
+}
+
+@keyframes sweep {
+    from { transform: translateX(-120px); }
+    to   { transform: translateX(100%); }
+}
+
+.progress-foot {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.file {
+    color: var(--faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;      /* длинный путь обрезается слева, имя файла видно */
+    text-align: left;
+}
+
+.percent {
+    flex: 0 0 auto;
+    font-size: 18px;
+    color: var(--white);
+}
+
+/* ── Узкие и низкие окна ─────────────────────────────────────────────────── */
+
+@media (max-width: 900px), (max-height: 620px) {
+    .shell { padding: 3vh 24px; gap: 14px; }
+    .body { grid-template-columns: 1fr; }
+    .info .links { padding-top: 12px; }
+    .head-text h1 { font-size: 24px; }
+    .tip-body h3 { font-size: 15px; }
+    .tip-body p { font-size: 12px; }
+}
+
+@media (max-height: 520px) {
+    .tips { display: none; }
+}

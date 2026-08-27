@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EliteRP · Подключение к серверу</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- Фон: слайдшоу из папки fones плюс затемнение и развёртка. Картинки
+     подхватываются скриптом сами; пока ни одна не загрузилась, виден тот же
+     тёмный фон, что и раньше, — страница обязана открыться до того, как у
+     игрока появится нормальный канал. -->
+<div class="bg" aria-hidden="true">
+    <div class="bg-shots" id="bg-shots"></div>
+    <div class="bg-shade"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-scan"></div>
+    <div class="bg-vignette"></div>
+</div>
+
+<main class="shell">
+
+    <!-- ── Шапка ─────────────────────────────────────────────────────────── -->
+    <header class="head">
+        <div class="mark" aria-hidden="true">
+            <img src="assets/logo.png" class="claw" alt="">
+        </div>
+
+        <div class="head-text">
+            <h1 id="server-name">ELITERP</h1>
+            <p id="server-tag">ПОДКЛЮЧЕНИЕ К СЕКТОРУ-17</p>
+        </div>
+
+        <div class="head-state">
+            <span class="dot" id="state-dot"></span>
+            <span id="state-label">УСТАНОВКА СВЯЗИ</span>
+        </div>
+    </header>
+
+    <!-- ── Тело ──────────────────────────────────────────────────────────── -->
+    <div class="body">
+
+        <!-- Левая колонка: сводка о сервере -->
+        <section class="card info">
+            <h2 class="card-title">СВОДКА</h2>
+
+            <dl class="rows">
+                <div class="row">
+                    <dt>КАРТА</dt>
+                    <dd id="info-map">—</dd>
+                </div>
+                <div class="row">
+                    <dt>РЕЖИМ</dt>
+                    <dd id="info-gamemode">—</dd>
+                </div>
+                <div class="row">
+                    <dt>МЕСТ НА СЕРВЕРЕ</dt>
+                    <dd id="info-maxplayers">—</dd>
+                </div>
+                <div class="row">
+                    <dt>ВАШ STEAMID</dt>
+                    <dd id="info-steamid">—</dd>
+                </div>
+            </dl>
+
+            <div class="links" id="links"></div>
+        </section>
+
+        <!-- Правая колонка: советы, по три штуки на страницу -->
+        <section class="card tips">
+            <h2 class="card-title">СОВЕТЫ</h2>
+
+            <div class="tip-list" id="tip-list"></div>
+
+            <div class="tip-dots" id="tip-dots"></div>
+        </section>
+    </div>
+
+    <!-- ── Прогресс ──────────────────────────────────────────────────────── -->
+    <footer class="progress-block">
+        <div class="progress-head">
+            <span id="progress-status">ОЖИДАНИЕ ОТВЕТА СЕРВЕРА</span>
+            <span id="progress-count" class="muted"></span>
+        </div>
+
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="bar">
+            <div class="bar-fill" id="bar-fill"></div>
+            <div class="bar-sweep" id="bar-sweep"></div>
+        </div>
+
+        <div class="progress-foot">
+            <span id="progress-file" class="file">—</span>
+            <span id="progress-percent" class="percent">0 %</span>
+        </div>
+    </footer>
+
+</main>
+
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
