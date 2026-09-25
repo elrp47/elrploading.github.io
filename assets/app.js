@@ -531,7 +531,7 @@
     function demo() {
         setText("server-name", CFG.fallbackName || "ELITERP");
         setText("info-map", CFG.mapName || "—");
-        setText("info-maxplayers", "64");
+        setText("info-maxplayers", CFG.maxPlayers || "—");
         setText("info-steamid", "STEAM_0:0:0000000");
 
         // Реальные пути из аддона: в демо-прогоне видно то же, что игрок
