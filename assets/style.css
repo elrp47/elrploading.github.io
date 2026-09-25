@@ -291,6 +291,39 @@ body {
     word-break: break-all;
 }
 
+.about {
+    margin-top: auto;
+    padding-top: 22px;
+}
+
+.about .card-title { margin-bottom: 10px; }
+
+.about ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.about li {
+    position: relative;
+    padding-left: 14px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--dim);
+}
+
+.about li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
+    background: var(--accent);
+}
+
 .links {
     margin-top: auto;
     padding-top: 18px;
@@ -320,7 +353,7 @@ body {
     border-bottom-color: var(--accent);
 }
 
-/* Советы: по три штуки на странице, страница сменяется целиком */
+/* Советы: по tipsPerPage штук на странице, страница сменяется целиком */
 
 .tips { justify-content: space-between; }
 
@@ -329,8 +362,8 @@ body {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    gap: 14px;
+    justify-content: space-evenly;
+    gap: 12px;
     animation: fade 0.45s ease;
 }
 
@@ -508,6 +541,7 @@ body {
     .head-text h1 { font-size: 24px; }
     .tip-body h3 { font-size: 15px; }
     .tip-body p { font-size: 12px; }
+    .about { display: none; }
 }
 
 @media (max-height: 520px) {

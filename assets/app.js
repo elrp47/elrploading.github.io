@@ -155,7 +155,6 @@
         var any = false;
 
         if (q.mapname)    { setText("info-map", q.mapname);           any = true; }
-        if (q.gamemode)   { setText("info-gamemode", q.gamemode);     any = true; }
         if (q.maxplayers) { setText("info-maxplayers", q.maxplayers); any = true; }
         if (q.steamid)    { setText("info-steamid", q.steamid);       any = true; }
 
@@ -172,7 +171,6 @@
 
         setText("server-name", clean(name, CFG.fallbackName || "ELITERP"));
         setText("info-map", clean(map, "—"));
-        setText("info-gamemode", clean(gamemode, "—"));
         setText("info-maxplayers", clean(maxplayers, "—"));
         setText("info-steamid", clean(steamid, "—"));
 
@@ -468,6 +466,38 @@
         }
     }
 
+    // ── О сервере ───────────────────────────────────────────────────────────
+
+    function buildAbout() {
+        var box = $("about");
+        var list = $("about-list");
+        var items = CFG.about || [];
+
+        if (!box || !list) { return; }
+        if (items.length === 0) {
+            box.style.display = "none";
+            return;
+        }
+
+        for (var i = 0; i < items.length; i++) {
+            var li = document.createElement("li");
+            li.textContent = items[i];
+            list.appendChild(li);
+        }
+    }
+
+    // ── Время подключения ───────────────────────────────────────────────────
+
+    function startElapsed() {
+        var started = Date.now();
+
+        setInterval(function () {
+            var s = Math.floor((Date.now() - started) / 1000);
+            var sec = s % 60;
+            setText("info-elapsed", Math.floor(s / 60) + ":" + (sec < 10 ? "0" : "") + sec);
+        }, 1000);
+    }
+
     // ── Запуск ──────────────────────────────────────────────────────────────
 
     function init() {
@@ -476,6 +506,8 @@
 
         applyQuery();
         buildLinks();
+        buildAbout();
+        startElapsed();
         startTips();
         startBackgrounds();
         render();
@@ -498,8 +530,7 @@
 
     function demo() {
         setText("server-name", CFG.fallbackName || "ELITERP");
-        setText("info-map", "rp_city17");
-        setText("info-gamemode", "darkrp");
+        setText("info-map", CFG.mapName || "—");
         setText("info-maxplayers", "64");
         setText("info-steamid", "STEAM_0:0:0000000");
 
