@@ -53,10 +53,6 @@
                     <dd id="info-map">—</dd>
                 </div>
                 <div class="row">
-                    <dt>РЕЖИМ</dt>
-                    <dd id="info-gamemode">—</dd>
-                </div>
-                <div class="row">
                     <dt>МЕСТ НА СЕРВЕРЕ</dt>
                     <dd id="info-maxplayers">—</dd>
                 </div>
@@ -64,12 +60,22 @@
                     <dt>ВАШ STEAMID</dt>
                     <dd id="info-steamid">—</dd>
                 </div>
+                <div class="row">
+                    <dt>ВРЕМЯ ПОДКЛЮЧЕНИЯ</dt>
+                    <dd id="info-elapsed">0:00</dd>
+                </div>
             </dl>
+
+            <!-- Пункты берутся из about в config.js; пустой список — блок скрыт -->
+            <div class="about" id="about">
+                <h2 class="card-title">О СЕРВЕРЕ</h2>
+                <ul id="about-list"></ul>
+            </div>
 
             <div class="links" id="links"></div>
         </section>
 
-        <!-- Правая колонка: советы, по три штуки на страницу -->
+        <!-- Правая колонка: советы, по tipsPerPage штук на страницу -->
         <section class="card tips">
             <h2 class="card-title">СОВЕТЫ</h2>
 
